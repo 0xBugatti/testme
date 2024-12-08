@@ -2,11 +2,13 @@
 FROM python:3.9-slim as base
 
 # Step 2: Install system dependencies
-RUN apt-get update && apt-get install -y \
-    python3-pip \
-    libpq-dev \
-    postgresql \
-    && apt-get clean
+RUN apt-get update && \
+    apt-get install -y python3-pip python3-dev libpq-dev \
+        postgresql postgresql-contrib nginx curl \
+        libjpeg-dev zlib1g-dev libfreetype6-dev liblcms2-dev \
+        libwebp-dev tcl8.6-dev tk8.6-dev libharfbuzz-dev \
+        libfribidi-dev libxcb1-dev \
+        && apt-get clean
 
 # Step 3: Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
