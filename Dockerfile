@@ -31,6 +31,10 @@ RUN /etc/init.d/postgresql start && \
     psql --command "CREATE USER myuser WITH PASSWORD 'mypassword';" && \
     psql --command "GRANT ALL PRIVILEGES ON DATABASE mydb TO myuser;"
 
+# Switch back to the root user
+USER root
+
+
 # Step 8: Configure Django settings for PostgreSQL
 RUN sed -i "s/ENGINE': 'django.db.backends.sqlite3/ENGINE': 'django.db.backends.postgresql_psycopg2/" /app/settings.py && \
     sed -i "s/NAME': 'db.sqlite3/NAME': 'mydb', 'USER': 'myuser', 'PASSWORD': 'mypassword', 'HOST': 'localhost', 'PORT': '5432'/" /app/settings.py
