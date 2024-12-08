@@ -24,11 +24,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Step 6: Copy project files
 COPY . /app/
 
-# Step 7: Set up PostgreSQL
-RUN service postgresql start && \
-    postgres psql -c "CREATE DATABASE mydb;" && \
-    postgres psql -c "CREATE USER myuser WITH PASSWORD 'mypassword';" && \
-    postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE mydb TO myuser;"
+# Configure PostgreSQL
+USER postgres
+RUN /etc/init.d/postgresql start && \
+    psql --command "CREATE DATABASE mydb;" && \
+    psql --command "CREATE USER myuser WITH PASSWORD 'mypassword';" && \
+    psql --command "GRANT ALL PRIVILEGES ON DATABASE mydb TO myuser;
 
 # Step 8: Configure Django settings for PostgreSQL
 RUN sed -i "s/ENGINE': 'django.db.backends.sqlite3/ENGINE': 'django.db.backends.postgresql_psycopg2/" /app/settings.py && \
