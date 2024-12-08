@@ -1,51 +1,44 @@
-# Step 1: Use the official Python image
-FROM python:3.9-slim as base
+FROM python:3.9-slim
 
-# Step 2: Install system dependencies
+
 RUN apt-get update && \
     apt-get install -y python3-pip python3-dev libpq-dev \
-        postgresql postgresql-contrib nginx curl \
+        nginx curl \
         libjpeg-dev zlib1g-dev libfreetype6-dev liblcms2-dev \
         libwebp-dev tcl8.6-dev tk8.6-dev libharfbuzz-dev \
         libfribidi-dev libxcb1-dev \
         && apt-get clean
 
-# Step 3: Set environment variables
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
 
-# Step 4: Set the working directory
+# Set environment variables for Django
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PORT=8080
+
+# Set working directory
 WORKDIR /app
 
-# Step 5: Install Python dependencies
+# Copy requirements and install
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Step 6: Copy project files
+# Copy project files
 COPY . /app/
 
-# Configure PostgreSQL
-USER postgres
-RUN /etc/init.d/postgresql start && \
-    psql --command "CREATE DATABASE mydb;" && \
-    psql --command "CREATE USER myuser WITH PASSWORD 'mypassword';" && \
-    psql --command "GRANT ALL PRIVILEGES ON DATABASE mydb TO myuser;"
+# Set environment variables for superuser creation (example values)
+# In a real scenario, pass these at runtime or via a secret manager
+ENV DJANGO_SUPERUSER_USERNAME=admin \
+    DJANGO_SUPERUSER_EMAIL=admin@example.com \
+    DJANGO_SUPERUSER_PASSWORD=adminpass
 
-# Switch back to the root user
-USER root
-
-
-RUN echo 'DATABASES={"default": {\
-    "ENGINE": "django.db.backends.postgresql_psycopg2", \
-    "NAME": "mydb", \
-    "USER": "myuser", \
-    "PASSWORD": "mypassword", \
-    "HOST": "localhost", \
-    "PORT": ""}}' >> /app/eLMS/settings.py
-
-
-# Step 9: Expose port for Cloud Run
+# Expose port
 EXPOSE 8080
 
-# Step 10: Run migrations and start the server
-CMD ["sh", "-c", "service postgresql start && python manage.py migrate && gunicorn --bind 0.0.0.0:8080 projectname.wsgi"]
+# The CMD below will:
+# 1. Run migrations
+# 2. Attempt to create a superuser (will do nothing if user already exists)
+# 3. Start the development server
+
+CMD ["/bin/sh", "-c", "python manage.py makemigrations && \
+    python manage.py migrate && \
+    python manage.py createsuperuser --noinput || t
