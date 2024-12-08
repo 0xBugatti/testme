@@ -24,9 +24,9 @@ COPY . /app/
 
 # Step 7: Set up PostgreSQL
 RUN service postgresql start && \
-    sudo -u postgres psql -c "CREATE DATABASE mydb;" && \
-    sudo -u postgres psql -c "CREATE USER myuser WITH PASSWORD 'mypassword';" && \
-    sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE mydb TO myuser;"
+    postgres psql -c "CREATE DATABASE mydb;" && \
+    postgres psql -c "CREATE USER myuser WITH PASSWORD 'mypassword';" && \
+    postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE mydb TO myuser;"
 
 # Step 8: Configure Django settings for PostgreSQL
 RUN sed -i "s/ENGINE': 'django.db.backends.sqlite3/ENGINE': 'django.db.backends.postgresql_psycopg2/" /app/settings.py && \
