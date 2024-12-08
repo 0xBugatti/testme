@@ -39,7 +39,7 @@ RUN echo 'DATABASES={"default": {\
     "ENGINE": "django.db.backends.postgresql_psycopg2", \
     "NAME": "mydb", \
     "USER": "myuser", \
-    "PASSWORD": "password", \
+    "PASSWORD": "mypassword", \
     "HOST": "localhost", \
     "PORT": ""}}' >> /app/eLMS/settings.py
 
