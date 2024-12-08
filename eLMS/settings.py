@@ -77,6 +77,11 @@ TEMPLATES = [
     },
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+"https://bugatti-lab-elmsv2-426597867885.us-central1.run.app"
+]
+
+
 WSGI_APPLICATION = 'eLMS.wsgi.application'
 
 
